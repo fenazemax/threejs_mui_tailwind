@@ -1,17 +1,10 @@
 import React from 'react'
-import { Button } from '@components/ui/button'
-import { useThemeMode } from '@context/context'
+import { AppHeader } from './components/AppHeader'
 
 export const App: React.FC = () => {
-  const { toggleTheme } = useThemeMode()
-
-  const handleClick = () => {
-    toggleTheme()
-  }
-
   return (
-    <div className="bg-red-50 w-full h-svh flex items-center justify-center dark:bg-blue-950">
-      <Button onClick={handleClick}>Change theme</Button>
+    <div className="bg-gray-50 w-svw h-svh flex justify-center dark:bg-gray-900">
+      <AppHeader />
     </div>
   )
 }
