@@ -12,6 +12,7 @@ export default defineConfig({
       '@components': path.resolve(__dirname, './src/components'),
       '@styles': path.resolve(__dirname, './src/assets/styles'),
       '@context': path.resolve(__dirname, './src/context'),
+      '@constants': path.resolve(__dirname, './src/constants'),
     },
   },
 })
