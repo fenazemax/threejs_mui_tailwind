@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { Button } from '@ui/button'
 import { useModeContext } from '@/context/ModeContext/context'
 import type { TViewModes } from '@/types/navigation'
 import { ViewModes } from '@/types/navigation'

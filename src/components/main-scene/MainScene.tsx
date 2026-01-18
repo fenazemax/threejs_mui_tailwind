@@ -1,21 +1,44 @@
 import { Canvas } from '@react-three/fiber'
-import React from 'react'
+import React, { Suspense } from 'react'
 import { AppMesh } from '@components/threejs-components'
-import { CoffeeTable } from '@ui/catalog-components'
-import { OrbitControls } from '@react-three/drei'
+import { FurnitureModel } from '@ui/furniture-model'
+import { Bounds, OrbitControls } from '@react-three/drei'
+import type { FurnitureItem } from '@/types/data'
 
-export const MainScene: React.FC = () => {
+interface MainSceneProps {
+  selectedItem: FurnitureItem | null
+}
+
+export const MainScene: React.FC<MainSceneProps> = (props) => {
+  const { selectedItem } = props
+
+  if (!selectedItem) return <span>Выберите предмет из каталога</span>
+
   return (
-    <div className="w-[50%] my-40 h-100 m-auto">
-      <Canvas camera={{ position: [40, 40, 40], fov: 110 }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight color="white" position={[5, 5, 5]} intensity={1} />
+    <div className="flex flex-col h-170 justify-center w-screen">
+      <span className="text-center mt-10">"{selectedItem.name.toUpperCase()}"</span>
 
-        <AppMesh>
-          <CoffeeTable />
-        </AppMesh>
-        <OrbitControls />
-      </Canvas>
+      <div className="w-[50%] h-full m-auto flex-1 border border-gray-200 rounded-lg">
+        <Canvas camera={{ position: [40, 40, 40], fov: 60 }}>
+          <directionalLight position={[5, 10, 7]} intensity={1.2} />
+          <directionalLight position={[-5, 5, -3]} intensity={0.4} />
+          <directionalLight position={[0, 5, -10]} intensity={0.6} />
+
+          <ambientLight intensity={0.2} />
+
+          <Suspense fallback={null}>
+            {selectedItem && (
+              <Bounds fit clip observe margin={1.2}>
+                <AppMesh>
+                  <FurnitureModel modelPath={selectedItem.modelPath} />
+                </AppMesh>
+              </Bounds>
+            )}
+          </Suspense>
+
+          <OrbitControls />
+        </Canvas>
+      </div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ModeSelector, NavigationBar, ThemeToggleSwitch } from '@components/app-header/header-components'
-import { Button } from '@components/ui/button'
+import { Button } from '@ui/button'
 
 export const AppHeader: React.FC = () => {
   return (
