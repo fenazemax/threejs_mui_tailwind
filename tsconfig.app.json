@@ -28,7 +28,8 @@
       "@components/*": ["./src/components/*"],
       "@styles/*": ["./src/assets/styles/*"],
       "@context/*": ["./src/context/*"],
-      "@constants/*": ["./src/constants/*"]
+      "@constants/*": ["./src/constants/*"],
+      "@ui/*": ["./src/components/ui/*"]
     }
   },
   "include": ["src"]

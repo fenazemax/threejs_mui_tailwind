@@ -1,5 +1,6 @@
 import React from 'react'
 
 export const DrawerList = () => {
-  return <div>DrawerList</div>
+  //TODO: Сделать по тз
+  return <div className="p-5">Something</div>
 }

@@ -1,5 +1,6 @@
 import { Drawer } from '@mui/material'
 import React from 'react'
+import { DrawerList } from './drawer-list'
 
 interface AppDrawerProps {
   isOpen: boolean
@@ -11,7 +12,7 @@ export const AppDrawer: React.FC<AppDrawerProps> = (props) => {
 
   return (
     <Drawer open={isOpen} onClose={onToggleOpen}>
-      AppDrawer
+      <DrawerList />
     </Drawer>
   )
 }
