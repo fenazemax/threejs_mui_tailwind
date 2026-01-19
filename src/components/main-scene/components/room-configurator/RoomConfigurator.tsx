@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import type { FurnitureItem } from '@/types/data'
 import { catalogData, STORAGE_KEY } from '@/constants'
-import { ConfigSettings, ConfiguratorCanvas, FurnitureSelector } from '@/components/threejs-components'
+import { ConfigActions, ConfigSettings, ConfiguratorCanvas, FurnitureSelector } from '@/components/threejs-components'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import type { DataForLS, IPlacedFurniture, IRoomConfig } from '@/types/config'
 import { saveConfigToLS } from '@/utils/saveToLS'
 import { loadConfigFromLS } from '@/utils/loadFromLS'
-import { Button } from '@ui/button'
 
 const defaultConfig: IRoomConfig = {
   floorColor: '#d4a574',
@@ -97,18 +96,8 @@ export const RoomConfigurator: React.FC = () => {
   }, [])
 
   return (
-    <div className="flex flex-row-reverse w-full px-10 justify-center gap-10">
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-        <Button onClick={handleSaveConfig} tailwindClasses=" text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
-          Сохранить
-        </Button>
-        <Button onClick={loadConfigFromLS} tailwindClasses=" text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
-          Загрузить
-        </Button>
-        <Button onClick={handleClearConfiguration} tailwindClasses=" text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
-          Очистить
-        </Button>
-      </div>
+    <div className="flex flex-row-reverse w-full px-10 justify-center gap-10 relative">
+      <ConfigActions loadConfigFromLS={loadConfigFromLS} onClearConfiguration={handleClearConfiguration} onSaveConfig={handleSaveConfig} />
 
       <FurnitureSelector config={config} onChangeConfig={handleChangeConfig} />
 
