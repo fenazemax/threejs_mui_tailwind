@@ -1,2 +1,5 @@
 export { AppMesh } from './mesh/app-mesh'
 export { DraggableFurniture } from './draggable-furniture/DraggableFurniture'
+export { ConfiguratorCanvas } from './configurator-canvas/ConfiguratorCanvas'
+export { FurnitureSelector } from './furniture-selector/FurnitureSelector'
+export { ConfigSettings } from './config-settings/ConfigSettings'

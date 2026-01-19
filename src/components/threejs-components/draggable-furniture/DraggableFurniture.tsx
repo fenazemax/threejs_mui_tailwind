@@ -35,17 +35,26 @@ export const DraggableFurniture: React.FC<DraggableFurnitureProps> = ({
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     setIsDragging(true)
-    ;(e.target as any).setPointerCapture(e.pointerId)
+    const target = e.target as Element
+    if (target.setPointerCapture) {
+      target.setPointerCapture(e.pointerId)
+    }
 
     if (orbitControlsRef.current) {
       orbitControlsRef.current.enabled = false
     }
+
+    document.body.style.cursor = 'grabbing'
   }
 
   const handlePointerUp = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     setIsDragging(false)
-    ;(e.target as any).releasePointerCapture(e.pointerId)
+
+    const target = e.target as Element
+    if (target.releasePointerCapture) {
+      target.releasePointerCapture(e.pointerId)
+    }
 
     if (orbitControlsRef.current) {
       orbitControlsRef.current.enabled = true
@@ -54,6 +63,8 @@ export const DraggableFurniture: React.FC<DraggableFurnitureProps> = ({
     if (meshRef.current && onPositionChange) {
       onPositionChange([meshRef.current.position.x, meshRef.current.position.y, meshRef.current.position.z])
     }
+
+    document.body.style.cursor = isHovered ? 'grab' : 'auto'
   }
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
