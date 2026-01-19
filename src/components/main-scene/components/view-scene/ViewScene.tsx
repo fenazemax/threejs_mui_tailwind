@@ -5,11 +5,11 @@ import { FurnitureModel } from '@ui/furniture-model'
 import { Bounds, OrbitControls } from '@react-three/drei'
 import type { FurnitureItem } from '@/types/data'
 
-interface MainSceneProps {
+interface ViewSceneProps {
   selectedItem: FurnitureItem | null
 }
 
-export const MainScene: React.FC<MainSceneProps> = (props) => {
+export const ViewScene: React.FC<ViewSceneProps> = (props) => {
   const { selectedItem } = props
 
   if (!selectedItem) return <span>Выберите предмет из каталога</span>
