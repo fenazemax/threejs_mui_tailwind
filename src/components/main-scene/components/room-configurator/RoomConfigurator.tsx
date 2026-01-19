@@ -6,6 +6,7 @@ import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import type { DataForLS, IPlacedFurniture, IRoomConfig } from '@/types/config'
 import { saveConfigToLS } from '@/utils/saveToLS'
 import { loadConfigFromLS } from '@/utils/loadFromLS'
+import { Button } from '@ui/button'
 
 const defaultConfig: IRoomConfig = {
   floorColor: '#d4a574',
@@ -98,27 +99,15 @@ export const RoomConfigurator: React.FC = () => {
   return (
     <div className="flex flex-row-reverse w-full px-10 justify-center gap-10">
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-        <button
-          onClick={handleSaveConfig}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow-lg flex items-center gap-2"
-        >
-          <span>💾</span>
+        <Button onClick={handleSaveConfig} tailwindClasses=" text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
           Сохранить
-        </button>
-        <button
-          onClick={loadConfigFromLS}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow-lg flex items-center gap-2"
-        >
-          <span>📂</span>
+        </Button>
+        <Button onClick={loadConfigFromLS} tailwindClasses=" text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
           Загрузить
-        </button>
-        <button
-          onClick={handleClearConfiguration}
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow-lg flex items-center gap-2"
-        >
-          <span>🗑️</span>
+        </Button>
+        <Button onClick={handleClearConfiguration} tailwindClasses=" text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
           Очистить
-        </button>
+        </Button>
       </div>
 
       <FurnitureSelector config={config} onChangeConfig={handleChangeConfig} />
