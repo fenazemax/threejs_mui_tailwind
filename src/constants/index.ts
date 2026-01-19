@@ -4,6 +4,8 @@ export const DARK_THEME_LABEL = 'Темная тема'
 
 export const LIGHT_THEME_LABEL = 'Светлая тема'
 
+export const STORAGE_KEY = 'config'
+
 const MODEL_PATH = './src/assets/models'
 
 export const catalogData: FurnitureItem[] = [

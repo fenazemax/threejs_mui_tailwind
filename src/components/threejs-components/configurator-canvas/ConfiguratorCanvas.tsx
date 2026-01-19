@@ -10,11 +10,22 @@ interface ConfiguratorCanvasProps {
   placedFurniture: IPlacedFurniture[]
   config: IRoomConfig
   orbitControlsRef: React.RefObject<OrbitControlsImpl | null>
+  selectedFurnitureId: string | null
   onUpdateFurniturePosition: (id: string, newPosition: [number, number, number]) => void
+  onSelectFurniture: (id: string) => void
+  onUpdateFurnitureScale: (id: string, scale: number) => void
 }
 
 export const ConfiguratorCanvas: React.FC<ConfiguratorCanvasProps> = (props) => {
-  const { config, placedFurniture, orbitControlsRef, onUpdateFurniturePosition } = props
+  const {
+    config,
+    orbitControlsRef,
+    placedFurniture,
+    selectedFurnitureId,
+    onSelectFurniture,
+    onUpdateFurniturePosition,
+    onUpdateFurnitureScale,
+  } = props
 
   return (
     <div className="h-150 w-[75%]">
@@ -31,9 +42,12 @@ export const ConfiguratorCanvas: React.FC<ConfiguratorCanvasProps> = (props) => 
             key={furniture.id}
             modelPath={furniture.item.modelPath}
             position={furniture.position}
-            scale={furniture.item.defaultScale}
+            scale={furniture.scale} // Используем scale из state
+            isSelected={selectedFurnitureId === furniture.id} // НОВОЕ
+            onSelect={() => onSelectFurniture(furniture.id)} // НОВОЕ
             orbitControlsRef={orbitControlsRef}
             onPositionChange={(newPos) => onUpdateFurniturePosition(furniture.id, newPos)}
+            onScaleChange={(newScale) => onUpdateFurnitureScale(furniture.id, newScale)} // НОВОЕ
           />
         ))}
         <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 2} ref={orbitControlsRef} />

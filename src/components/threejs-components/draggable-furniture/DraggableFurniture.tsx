@@ -1,5 +1,5 @@
 // components/DraggableFurniture.tsx
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLoader, useThree } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -12,17 +12,18 @@ interface DraggableFurnitureProps {
   scale?: number
   orbitControlsRef: React.RefObject<OrbitControlsImpl | null>
   onPositionChange?: (position: [number, number, number]) => void
+  isSelected?: boolean
+  onSelect?: () => void
+  onScaleChange?: (scale: number) => void
 }
 
-export const DraggableFurniture: React.FC<DraggableFurnitureProps> = ({
-  modelPath,
-  position,
-  scale = 1,
-  onPositionChange,
-  orbitControlsRef,
-}) => {
+export const DraggableFurniture: React.FC<DraggableFurnitureProps> = (props) => {
+  const { modelPath, position, scale = 1, isSelected = false, onSelect, onPositionChange, onScaleChange, orbitControlsRef } = props
+
   const meshRef = useRef<THREE.Group>(null)
+
   const gltf = useLoader(GLTFLoader, modelPath)
+
   const [isDragging, setIsDragging] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -34,11 +35,12 @@ export const DraggableFurniture: React.FC<DraggableFurnitureProps> = ({
 
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
-    setIsDragging(true)
-    const target = e.target as Element
-    if (target.setPointerCapture) {
-      target.setPointerCapture(e.pointerId)
+
+    if (onSelect) {
+      onSelect()
     }
+
+    setIsDragging(true)
 
     if (orbitControlsRef.current) {
       orbitControlsRef.current.enabled = false
@@ -47,31 +49,9 @@ export const DraggableFurniture: React.FC<DraggableFurnitureProps> = ({
     document.body.style.cursor = 'grabbing'
   }
 
-  const handlePointerUp = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation()
-    setIsDragging(false)
-
-    const target = e.target as Element
-    if (target.releasePointerCapture) {
-      target.releasePointerCapture(e.pointerId)
-    }
-
-    if (orbitControlsRef.current) {
-      orbitControlsRef.current.enabled = true
-    }
-
-    if (meshRef.current && onPositionChange) {
-      onPositionChange([meshRef.current.position.x, meshRef.current.position.y, meshRef.current.position.z])
-    }
-
-    document.body.style.cursor = isHovered ? 'grab' : 'auto'
-  }
-
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
     if (isDragging && meshRef.current) {
       e.stopPropagation()
-      meshRef.current.position.x = e.point.x
-      meshRef.current.position.z = e.point.z
 
       const rect = gl.domElement.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1
@@ -82,8 +62,8 @@ export const DraggableFurniture: React.FC<DraggableFurnitureProps> = ({
       raycaster.current.ray.intersectPlane(planeRef.current, intersectionPoint.current)
 
       if (intersectionPoint.current) {
-        const clampedX = THREE.MathUtils.clamp(intersectionPoint.current.x, -4.5, 4.5)
-        const clampedZ = THREE.MathUtils.clamp(intersectionPoint.current.z, -4.5, 4.5)
+        const clampedX = THREE.MathUtils.clamp(intersectionPoint.current.x, -4, 4)
+        const clampedZ = THREE.MathUtils.clamp(intersectionPoint.current.z, -4, 4)
 
         meshRef.current.position.x = clampedX
         meshRef.current.position.z = clampedZ
@@ -91,24 +71,84 @@ export const DraggableFurniture: React.FC<DraggableFurnitureProps> = ({
     }
   }
 
+  const handleWheel = (e: ThreeEvent<WheelEvent>) => {
+    if (isSelected && onScaleChange) {
+      e.stopPropagation()
+
+      const delta = e.deltaY > 0 ? -0.05 : 0.05
+      const newScale = Math.max(0.1, Math.min(3, scale + delta))
+
+      onScaleChange(newScale)
+    }
+  }
+
+  useEffect(() => {
+    const handleGlobalPointerUp = () => {
+      if (isDragging) {
+        setIsDragging(false)
+
+        if (orbitControlsRef.current) {
+          orbitControlsRef.current.enabled = true
+        }
+
+        document.body.style.cursor = 'auto'
+
+        if (meshRef.current && onPositionChange) {
+          onPositionChange([meshRef.current.position.x, meshRef.current.position.y, meshRef.current.position.z])
+        }
+      }
+    }
+
+    window.addEventListener('pointerup', handleGlobalPointerUp)
+
+    return () => {
+      window.removeEventListener('pointerup', handleGlobalPointerUp)
+    }
+  }, [isDragging, onPositionChange, orbitControlsRef])
+
+  useEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.scale.set(scale, scale, scale)
+    }
+  }, [scale])
+
   return (
     <group
       ref={meshRef}
       position={position}
       scale={scale}
       onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
       onPointerMove={handlePointerMove}
-      onPointerOver={() => setIsHovered(true)}
-      onPointerOut={() => setIsHovered(false)}
+      onWheel={handleWheel}
+      onPointerOver={(e) => {
+        e.stopPropagation()
+        setIsHovered(true)
+        if (!isDragging) {
+          document.body.style.cursor = 'grab'
+        }
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation()
+        setIsHovered(false)
+        if (!isDragging) {
+          document.body.style.cursor = 'auto'
+        }
+      }}
     >
       <primitive object={gltf.scene.clone()} />
 
-      {isHovered && (
-        <mesh position={[0, 0, 0]}>
-          <circleGeometry args={[0.5, 32]} />
-          <meshBasicMaterial color="yellow" transparent opacity={0.3} />
+      {(isHovered || isSelected) && (
+        <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.4, 0.5, 32]} />
+          <meshBasicMaterial color={isDragging ? '#00ff00' : isSelected ? '#0099ff' : '#ffff00'} transparent opacity={0.6} />
         </mesh>
+      )}
+
+      {isSelected && !isDragging && (
+        <lineSegments>
+          <edgesGeometry attach="geometry" args={[new THREE.BoxGeometry(1, 1, 1)]} />
+          <lineBasicMaterial attach="material" color="#0099ff" linewidth={2} />
+        </lineSegments>
       )}
     </group>
   )
